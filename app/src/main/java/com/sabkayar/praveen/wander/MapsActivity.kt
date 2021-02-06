@@ -47,7 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val lat = 27.449647
         val lng = 77.952047
         val homeLatLng = LatLng(lat, lng)
-        val zoomLevel = 20f
+        val zoomLevel = 15f
 
 
 /*
@@ -72,6 +72,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val poiMarker=map.addMarker(MarkerOptions()
                 .position(poi.latLng)
                 .title(poi.name))
+            //call showInfoWindow() on poiMarker to immediately show the info window.
             poiMarker.showInfoWindow()
         }
     }
