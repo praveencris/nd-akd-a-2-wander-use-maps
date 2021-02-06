@@ -44,6 +44,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val lng = 77.952047
         val homeLatLng = LatLng(lat, lng)
         val zoomLevel=20f
+
+
+/*
+        The zoom level controls how zoomed in you are on the map. The following list gives you an idea of what level of detail each level of zoom shows:
+
+        1: World
+        5: Landmass/continent
+        10: City
+        15: Streets
+        20: Buildings*/
+
+
+
        // map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng,zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
