@@ -1,5 +1,8 @@
 package com.sabkayar.praveen.wander
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +10,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.common.util.Strings
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -16,6 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import java.lang.Exception
 import java.lang.String.format
+import java.security.Permissions
 import java.text.MessageFormat.format
 import java.util.*
 
@@ -31,6 +37,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        requestLocationPermission();
+    }
+
+    private fun requestLocationPermission() {
+
     }
 
     /**
@@ -68,19 +79,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map.addMarker(MarkerOptions().position(homeLatLng))
 
 
-        val overlaySize=100f
-        val groundOverlay=GroundOverlayOptions()
+        val overlaySize = 100f
+        val groundOverlay = GroundOverlayOptions()
             .image(BitmapDescriptorFactory.fromResource(R.drawable.android))
-            .position(homeLatLng,overlaySize)
+            .position(homeLatLng, overlaySize)
 
 
         map.addGroundOverlay(groundOverlay)
         setMapLongClick(map)
         setPoiClick(map)
         setMapStyle(map)
+
+        enableMyLocation()
     }
 
-    private fun setMapStyle(map:GoogleMap) {
+    private fun setMapStyle(map: GoogleMap) {
         try {
             // Customize the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -157,9 +170,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
-    companion object{
-        private val TAG=MapsActivity::class.java.simpleName
 
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
+            map.isMyLocationEnabled = true
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Check if location permissions are granted and if so enable the
+        // location data layer.
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                enableMyLocation()
+            }
+        }
+    }
+
+    companion object {
+        private val TAG = MapsActivity::class.java.simpleName
+        private const val REQUEST_LOCATION_PERMISSION = 1
     }
 
 }
