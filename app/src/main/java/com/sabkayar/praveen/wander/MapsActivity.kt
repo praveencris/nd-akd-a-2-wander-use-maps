@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import com.google.android.gms.common.util.Strings
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -12,6 +13,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.lang.String.format
+import java.text.MessageFormat.format
+import java.util.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -43,7 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val lat = 27.449647
         val lng = 77.952047
         val homeLatLng = LatLng(lat, lng)
-        val zoomLevel=20f
+        val zoomLevel = 20f
 
 
 /*
@@ -56,12 +60,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         20: Buildings*/
 
 
-
-       // map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng,zoomLevel))
+        // map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
+        setMapLongClick(map)
     }
 
+
+    private fun setMapLongClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+
+            // A Snippet is Additional text that's displayed below the title.
+            val snippet = String.format(
+                "Lat: %1$.5f, Long: %2.5f",
+                latLng.latitude,
+                latLng.longitude
+            )
+
+            map.addMarker(
+                MarkerOptions().position(latLng)
+                    .title(getString(R.string.dropped_pin))
+                    .snippet(snippet)
+            )
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
