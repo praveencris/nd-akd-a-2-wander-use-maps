@@ -13,10 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import java.lang.Exception
 import java.lang.String.format
 import java.text.MessageFormat.format
@@ -53,7 +50,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val lat = 27.449647
         val lng = 77.952047
         val homeLatLng = LatLng(lat, lng)
-        val zoomLevel = 15f
+        val zoomLevel = 18f
 
 
 /*
@@ -69,6 +66,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
+
+
+        val overlaySize=100f
+        val groundOverlay=GroundOverlayOptions()
+            .image(BitmapDescriptorFactory.fromResource(R.drawable.android))
+            .position(homeLatLng,overlaySize)
+
+
+        map.addGroundOverlay(groundOverlay)
         setMapLongClick(map)
         setPoiClick(map)
         setMapStyle(map)
