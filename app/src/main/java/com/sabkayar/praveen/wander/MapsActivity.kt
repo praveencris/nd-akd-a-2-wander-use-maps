@@ -1,7 +1,9 @@
 package com.sabkayar.praveen.wander
 
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -12,10 +14,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import java.lang.Exception
 import java.lang.String.format
 import java.text.MessageFormat.format
 import java.util.*
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -65,13 +70,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map.addMarker(MarkerOptions().position(homeLatLng))
         setMapLongClick(map)
         setPoiClick(map)
+        setMapStyle(map)
     }
 
-    private fun setPoiClick(map: GoogleMap){
-        map.setOnPoiClickListener {poi->
-            val poiMarker=map.addMarker(MarkerOptions()
-                .position(poi.latLng)
-                .title(poi.name))
+    private fun setMapStyle(map:GoogleMap) {
+        try {
+            // Customize the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this,
+                    R.raw.map_style
+                )
+            )
+
+            if (!success) {
+                Log.e(Companion.TAG, "Parsing to map style failed")
+            }
+
+        } catch (e: Resources.NotFoundException) {
+            Log.e(Companion.TAG, "Can't find style. Error: ", e)
+        }
+    }
+
+    private fun setPoiClick(map: GoogleMap) {
+        map.setOnPoiClickListener { poi ->
+            val poiMarker = map.addMarker(
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
+            )
             //call showInfoWindow() on poiMarker to immediately show the info window.
             poiMarker.showInfoWindow()
         }
@@ -121,5 +149,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
+    companion object{
+        private val TAG=MapsActivity::class.java.simpleName
+
+    }
 
 }
