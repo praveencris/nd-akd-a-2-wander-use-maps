@@ -42,7 +42,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val longitude = 77.185083
         val homeLatLng = LatLng(latitude, longitude)
 
-        val zoomLevel = 15f
+        val zoomLevel = 18f
+        val overlaySize = 100f
 
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
@@ -52,6 +53,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         )
         map.addMarker(MarkerOptions().position(homeLatLng))
+
+        val groundOverlay = GroundOverlayOptions()
+            .image(
+                BitmapDescriptorFactory
+                    .fromResource(R.drawable.android)
+            )
+            .position(homeLatLng,overlaySize)
+        map.addGroundOverlay(groundOverlay)
+
         setMapOnLongClick(googleMap)
         setOnPoiClick(googleMap)
         setMapStyle(googleMap)
@@ -110,7 +120,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         try {
             val success = map.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
-                    this, R.raw.maps_style))
+                    this, R.raw.maps_style
+                )
+            )
             if (!success) {
                 Log.e(TAG, "Style parsing failed.")
             }
