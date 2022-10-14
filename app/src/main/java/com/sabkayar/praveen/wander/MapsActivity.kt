@@ -1,10 +1,9 @@
 package com.sabkayar.praveen.wander
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -21,8 +20,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -39,13 +37,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map = googleMap
 
         val latitude = 28.583865
-        val longitude= 77.185083
-        val homeLatLng = LatLng(latitude,longitude)
+        val longitude = 77.185083
+        val homeLatLng = LatLng(latitude, longitude)
 
         val zoomLevel = 15f
 
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(homeLatLng,zoomLevel)))
+        map.moveCamera(
+            CameraUpdateFactory.newCameraPosition(
+                CameraPosition.fromLatLngZoom(
+                    homeLatLng, zoomLevel
+                )
+            )
+        )
         map.addMarker(MarkerOptions().position(homeLatLng))
+        setMapOnLongClick(googleMap)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -53,6 +58,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         inflater.inflate(R.menu.map_options, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         // Change the map type based on the user's selection.
         R.id.normal_map -> {
@@ -72,5 +78,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun setMapOnLongClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+            val snippet =
+                String.format("Lat: %1$.5f, Lng: %2$.5f", latLng.latitude, latLng.longitude)
+            map.addMarker(
+                MarkerOptions()
+                    .title(getString(R.string.dropped_pin))
+                    .snippet(snippet)
+                    .position(latLng)
+            )
+        }
     }
 }
