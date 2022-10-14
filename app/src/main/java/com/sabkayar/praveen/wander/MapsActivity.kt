@@ -51,6 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         )
         map.addMarker(MarkerOptions().position(homeLatLng))
         setMapOnLongClick(googleMap)
+        setOnPoiClick(googleMap)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -90,6 +91,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .snippet(snippet)
                     .position(latLng)
             )
+        }
+    }
+
+    private fun setOnPoiClick(map:GoogleMap){
+        map.setOnPoiClickListener { poi->
+         val poiMarker= map.addMarker(
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
+            )
+            poiMarker.showInfoWindow()
         }
     }
 }
