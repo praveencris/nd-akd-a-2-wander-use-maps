@@ -1,11 +1,16 @@
 package com.sabkayar.praveen.wander
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -16,6 +21,7 @@ import com.google.android.gms.maps.model.*
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val TAG = MapsActivity::class.java.simpleName
     private lateinit var map: GoogleMap
+    private val REQUEST_LOCATION_PERMISSION = 1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,17 +60,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         )
         map.addMarker(MarkerOptions().position(homeLatLng))
 
-        val groundOverlay = GroundOverlayOptions()
-            .image(
-                BitmapDescriptorFactory
-                    .fromResource(R.drawable.android)
-            )
-            .position(homeLatLng,overlaySize)
+        val groundOverlay = GroundOverlayOptions().image(
+                BitmapDescriptorFactory.fromResource(R.drawable.android)
+            ).position(homeLatLng, overlaySize)
         map.addGroundOverlay(groundOverlay)
 
         setMapOnLongClick(googleMap)
         setOnPoiClick(googleMap)
         setMapStyle(googleMap)
+        enableMyLocation()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -128,6 +132,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         } catch (e: Resources.NotFoundException) {
             Log.e(TAG, "Can't find style. Error: ", e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
+            map.isMyLocationEnabled = true
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                enableMyLocation()
+            }
         }
     }
 }
